@@ -4,23 +4,24 @@ import {
 } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const api = 'https://dummy-api.d0.acom.cloud/api/'
+const URL = 'https://dummy-api.d0.acom.cloud/api/'
 
-// interface UserData {
-//   access_token: string;
-//   token_type: string;
-//   expires_in: number;
-// };
+interface UserData {
+  access_token: string;
+  token_type: string;
+  expires_in: any;
+  user: {};
+};
 
 interface UserCridentials {
   email: string;
   password: string;
 }
 
-export const loginUser = createAsyncThunk<{}, UserCridentials, {rejectValue: string}>(
+export const loginUser = createAsyncThunk<UserData, UserCridentials, {rejectValue: string}>(
   'user/login',
   async (userCridentials, {rejectWithValue}) => {
-    const request = await axios.post(`${api}auth/login`, userCridentials);
+    const request = await axios.post(`${URL}auth/login`, userCridentials);
     
     if (!request) {
       return rejectWithValue('Server Error!');
@@ -37,7 +38,12 @@ export const loginUser = createAsyncThunk<{}, UserCridentials, {rejectValue: str
 const userSlice = createSlice({
   name: 'todos',
   initialState: {
-    user: {},
+    user: {
+      access_token: '',
+      token_type: '',
+      expires_in: '',
+      user: {},
+    },
     loading: false,
     error: '',
   },
