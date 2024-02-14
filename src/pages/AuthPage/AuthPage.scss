@@ -49,4 +49,11 @@
       border: 1px solid $lime;
     }
   }
+
+  &__error {
+    color: $red;
+    font-size: 18px;
+    margin-top: 25px;
+    text-align: center;
+  }
 }

@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import './Input.scss';
 import { Controller } from 'react-hook-form';
+import classNames from 'classnames';
 
 interface InputProps {
   label: string;
@@ -28,9 +29,14 @@ export const Input: FC<InputProps> = ({
       rules={rules}
       render={({field: {value, onChange, onBlur}, fieldState: {error}}) => (
         <div className='input'>
-          {/* <div> */}
-          <label className='input__label' htmlFor={name}>{label}</label>
-          <div className='input__container'>
+          <label className='input__label' htmlFor={name}>
+            {label}
+          </label>
+          <div className={classNames(
+              'input__container',
+              {'input__container--error': error}
+            )}
+          >
             <input
               className='input__container--field'
               type={type}

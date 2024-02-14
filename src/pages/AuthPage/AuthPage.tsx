@@ -2,11 +2,40 @@ import { FC } from 'react';
 import './AuthPage.scss';
 import { useForm } from 'react-hook-form';
 import { Input } from '../../components/Input/Input';
+import { emailValidation, passwordValidation } from './validation';
+import { useAppDispatch, useAppSelector } from '../../hooks/reduxHooks';
+import { loginUser } from '../../store/slices/userSlice';
+import { useNavigate } from 'react-router-dom';
+
+interface AuthData {
+  email: string;
+  password: string;
+}
 
 export const AuthPage: FC = () => {
-  const { handleSubmit, control } = useForm();
+  const { control, handleSubmit, resetField } = useForm<AuthData>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+    mode: 'onChange',
+  });
 
-  const onSubmit = () => console.log('Done')
+  const navigate = useNavigate();
+
+  const {error} = useAppSelector(state => state.user);
+  const dispatch = useAppDispatch();
+
+  const onSubmit = (data: AuthData) => {
+    dispatch(loginUser(data)).then((result) => {
+      if (result.payload) {
+        resetField('email');
+        resetField('password');
+        navigate('/products')
+      }
+    })
+  };
+
   return (
     <div className='page'>
       <div className='form'>
@@ -18,8 +47,7 @@ export const AuthPage: FC = () => {
               name="email"
               placeholder="Type email"
               control={control}
-              secureTextEntry
-              rules={{required: 'Email is required'}}
+              rules={emailValidation}
             />
 
             <Input
@@ -28,10 +56,13 @@ export const AuthPage: FC = () => {
               name="password"
               placeholder="Type password"
               control={control}
-              secureTextEntry
-              rules={{required: 'Password is required'}}
+              rules={passwordValidation}
             />
           </div>
+
+          {error && (
+            <div className='form__error'>{error}</div>
+          )}
 
           <div style={{textAlign: 'center'}}>
             <button className='form__button' type='submit'>Submit</button>
