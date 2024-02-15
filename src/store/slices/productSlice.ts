@@ -6,13 +6,7 @@ import axios from 'axios';
 
 const URL = 'https://dummy-api.d0.acom.cloud/api/'
 
-// interface UserData {
-//   access_token: string;
-//   token_type: string;
-//   expires_in: number;
-// };
-
-interface ProductData {
+interface ProductItem {
   id: any;
   title: string;
   body: string;
@@ -22,12 +16,27 @@ interface ProductData {
   updated_at: string
 }
 
-export const getProducts = createAsyncThunk<ProductData[], string, {rejectValue: string}>(
+interface Products {
+  current_page: any;
+  data: ProductItem[];
+  per_page: number;
+  total: number;
+  loading: boolean;
+  error: string;
+}
+
+interface QueryParams {
+  access_token: string
+  page: number;
+  title?: string;
+}
+
+export const getProducts = createAsyncThunk<Products, QueryParams, {rejectValue: string}>(
   'user/login',
-  async (token, {rejectWithValue}) => {
-    const request = await axios.get(`${URL}products?page=6`, {
+  async ({access_token, page, title}, {rejectWithValue}) => {
+    const request = await axios.get(`${URL}products?page=${page}&title=${title}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${access_token}`
       }
     }
   );
@@ -36,7 +45,7 @@ export const getProducts = createAsyncThunk<ProductData[], string, {rejectValue:
       return rejectWithValue('Server Error!');
     }
 
-    const response = await request.data.data;
+    const response = await request.data;
 
     console.log(response);
     return response;
@@ -44,9 +53,10 @@ export const getProducts = createAsyncThunk<ProductData[], string, {rejectValue:
 );
 
 const productSlice = createSlice({
-  name: 'todos',
+  name: 'products',
   initialState: {
-    products: [{
+    current_page: 1,
+    data: [{
       id: null,
       title: '',
       body: '',
@@ -55,10 +65,16 @@ const productSlice = createSlice({
       created_at: '',
       updated_at: '',
     }],
+    per_page: 0,
+    total: 0,
     loading: false,
     error: '',
   },
-  reducers: {},
+  reducers: {
+    setPage(state, action) {
+      state.current_page = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getProducts.pending, (state) => {
@@ -66,7 +82,10 @@ const productSlice = createSlice({
         state.error = '';
       })
       .addCase(getProducts.fulfilled, (state, action) => {
-        state.products = action.payload;
+        state.current_page = action.payload.current_page;
+        state.data = action.payload.data;
+        state.total = action.payload.total
+        state.per_page = action.payload.per_page
         state.loading = false;
       })
       .addCase(getProducts.rejected, (state, action) => {
@@ -77,3 +96,6 @@ const productSlice = createSlice({
 });
 
 export default productSlice.reducer;
+export const {
+  setPage
+} = productSlice.actions

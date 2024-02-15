@@ -9,8 +9,8 @@ interface InputProps {
   control: any;
   name: string;
   rules: object;
-  placeholder: string;
-  secureTextEntry?: boolean;
+  placeholder?: string;
+  // secureTextEntry?: boolean;
 }
 
 export const Input: FC<InputProps> = ({
@@ -20,14 +20,14 @@ export const Input: FC<InputProps> = ({
   name,
   rules,
   placeholder,
-  secureTextEntry
+  // secureTextEntry
 }) => {
   return (
     <Controller
       control={control}
       name={name}
       rules={rules}
-      render={({field: {value, onChange, onBlur}, fieldState: {error}}) => (
+      render={({field: {value, onChange}, fieldState: {error}}) => (
         <div className='input'>
           <label className='input__label' htmlFor={name}>
             {label}
@@ -42,7 +42,6 @@ export const Input: FC<InputProps> = ({
               type={type}
               value={value}
               onChange={onChange}
-              // onBlur={onBlur}
               placeholder={placeholder}
               // secureTextEntry={secureTextEntry}
             />
