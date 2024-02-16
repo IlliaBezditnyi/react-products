@@ -4,7 +4,7 @@ import {
 } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const URL = 'https://dummy-api.d0.acom.cloud/api/'
+const URL = process.env.REACT_APP_API_URL;
 
 interface ProductItem {
   id: any;
@@ -17,7 +17,7 @@ interface ProductItem {
 }
 
 interface Products {
-  current_page: any;
+  current_page: number;
   data: ProductItem[];
   per_page: number;
   total: number;
@@ -28,27 +28,36 @@ interface Products {
 interface QueryParams {
   access_token: string
   page: number;
-  title?: string;
+  name?: string;
+  price_from?: string;
+  price_to?: string;
+  date_from?: string;
+  date_to?: string;
 }
 
 export const getProducts = createAsyncThunk<Products, QueryParams, {rejectValue: string}>(
-  'user/login',
-  async ({access_token, page, title}, {rejectWithValue}) => {
-    const request = await axios.get(`${URL}products?page=${page}&title=${title}`, {
-      headers: {
-        'Authorization': `Bearer ${access_token}`
-      }
-    }
-  );
-    
-    if (!request) {
-      return rejectWithValue('Server Error!');
-    }
+  'products/getProducts',
+  async ({access_token, page, name, price_from, price_to, date_from, date_to}, {rejectWithValue}) => {
+    try {
+      const request = await axios.get(
+        `${URL}/products?page=${page}
+          &title=${name}
+          &price_from=${price_from}
+          &price_to=${price_to}
+          &from=${date_from}
+          &to=${date_to}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${access_token}`
+          }
+        }
+      )
 
-    const response = await request.data;
-
-    console.log(response);
-    return response;
+      return request.data;
+    }
+    catch(error: any) {
+      return rejectWithValue(error.request.data);
+    }
   }
 );
 
@@ -88,7 +97,7 @@ const productSlice = createSlice({
         state.per_page = action.payload.per_page
         state.loading = false;
       })
-      .addCase(getProducts.rejected, (state, action) => {
+      .addCase(getProducts.rejected, (state) => {
         state.loading = false;
         state.error = 'Error ocurred'
       })
@@ -98,4 +107,4 @@ const productSlice = createSlice({
 export default productSlice.reducer;
 export const {
   setPage
-} = productSlice.actions
+} = productSlice.actions;

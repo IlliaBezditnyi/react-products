@@ -23,8 +23,8 @@ export const AuthPage: FC = () => {
 
   const navigate = useNavigate();
 
-  const {error} = useAppSelector(state => state.user);
   const dispatch = useAppDispatch();
+  const {error} = useAppSelector(state => state.user);
 
   const onSubmit = (data: AuthData) => {
     dispatch(loginUser(data)).then((result) => {

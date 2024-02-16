@@ -4,7 +4,7 @@ import {
 } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const URL = 'https://dummy-api.d0.acom.cloud/api/'
+const URL = process.env.REACT_APP_API_URL;
 
 interface UserData {
   access_token: string;
@@ -21,17 +21,16 @@ interface UserCridentials {
 export const loginUser = createAsyncThunk<UserData, UserCridentials, {rejectValue: string}>(
   'user/login',
   async (userCridentials, {rejectWithValue}) => {
-    const request = await axios.post(`${URL}auth/login`, userCridentials);
-    
-    if (!request) {
-      return rejectWithValue('Server Error!');
+    try {
+      const request = await axios.post(`${URL}/auth/login`, userCridentials);
+
+      localStorage.setItem('user', JSON.stringify(request.data));
+
+      return request.data;
     }
-
-    const response = await request.data;
-    localStorage.setItem('user', JSON.stringify(response));
-
-    console.log(response);
-    return response;
+    catch(error: any) {
+      return rejectWithValue(error.request.data);
+    }
   }
 );
 
@@ -63,7 +62,7 @@ const userSlice = createSlice({
         if (action.error.message === 'Request failed with status code 401') {
           state.error = 'Acces Denied! Invalid Credentials';
         } else {
-          state.error = action.error.message || 'Internal server error. Please try again later';
+          state.error = 'Internal server error. Please try again later';
         }
       })
   }
