@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/unilime-task/static/css/main.a77f6ac4.css",
+    "main.js": "/unilime-task/static/js/main.27381d81.js",
+    "index.html": "/unilime-task/index.html",
+    "main.a77f6ac4.css.map": "/unilime-task/static/css/main.a77f6ac4.css.map",
+    "main.27381d81.js.map": "/unilime-task/static/js/main.27381d81.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a77f6ac4.css",
+    "static/js/main.27381d81.js"
+  ]
+}
